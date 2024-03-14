@@ -1,0 +1,62 @@
+# 4th do deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tethys-pg
+  labels:
+    #name: tethys-pg
+    app: tethys-pg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      #run: tethys-pg
+      app: tethys-pg
+  template:
+    metadata:
+      labels:
+        #run: tethys-pg
+        app: tethys-pg
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:14.4
+        imagePullPolicy: "IfNotPresent"
+        ports:
+          - containerPort: 5432
+            name: tethys-pg
+        #env:
+          #- name: POSTGRES_DB
+            #value: uf_aim
+          #- name: POSTGRES_USER
+            #value: postgres
+          #- name: POSTGRES_PASSWORD
+            #value: postgres
+        envFrom:
+          - configMapRef:
+              name: tethys-pg-config
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgresdb-teth
+      volumes:
+        - name: postgresdb-teth
+          persistentVolumeClaim:
+            claimName: tethys-postgres-data-claim
+
+---
+# 5th create service
+apiVersion: v1
+kind: Service
+metadata:
+  name: tethys-pg       # Name of the resource
+  labels:                 # Labels that will be applied to the resource
+    app: tethys-pg
+spec:
+  #type: LoadBalancer
+  #type: NodePort
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: tethys-pg
+    #tier: postgres
