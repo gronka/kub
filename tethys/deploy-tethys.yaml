@@ -16,19 +16,22 @@ spec:
     spec:
       containers:
       - name: tethyscore
-        image: docker.io/tethysplatform/tethys-core:latest
+        image: docker.io/gronka/tethys:latest
         imagePullPolicy: Always
         ports:
         - protocol: TCP
           containerPort: 8000
           hostPort: 8000
+          name: tethys-port
         env : 
-        - name: HOSTNAME
-          value: "localhost"
-        - name: ALLOWED_HOSTS
+        - name: K8S_HOST_IP
           valueFrom: 
             fieldRef:
-              fieldPath: spec.podIP
+              fieldPath: status.hostIP
+        - name: K8S_POD_IP
+          valueFrom: 
+            fieldRef:
+              fieldPath: status.podIP
         - name: CLIENT_MAX_BODY_SIZE
           value: 75M
         - name: NGINX_PORT
@@ -51,16 +54,16 @@ spec:
         #   - configMapRef:
         #       name: tethys-global-config-prod
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: tethys
-spec:
-  selector:
-    app: tethys
-  ports:
-  - protocol: TCP
-    port: 8000
-    targetPort: 8000
-    #name: tethys-port
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: tethys
+# spec:
+#   selector:
+#     app: tethys
+#   ports:
+#   - protocol: TCP
+#     port: 8000
+#     targetPort: 8000
+#     #name: tethys-port

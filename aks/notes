@@ -1,1 +1,5 @@
 az login
+
+
+tag:
+managed-by: aks

@@ -1,15 +1,13 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: tethys-lb
+  name: nginx-v1-public
 spec:
   type: LoadBalancer
   selector:
     app: tethys
   ports:
-    - protocol: TCP
-      port: 80
+    - port: 80
       targetPort: 8000
-  externalTrafficPolicy: Local
-  # externalIPs:
-  #   - 52.186.101.234
+      protocol: TCP

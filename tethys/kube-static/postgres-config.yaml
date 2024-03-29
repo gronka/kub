@@ -5,7 +5,8 @@ metadata:
   labels:
     app: tethys-pg
 data:
-  POSTGRES_DB: tethys_platform
-  POSTGRES_USER: tethys_default 
+  # POSTGRES_DB: tethys_platform
+  # POSTGRES_USER: tethys_default 
+  POSTGRES_USER: postgres
   POSTGRES_PASSWORD: pass 
   POSTGRES_HOST_AUTH_METHOD: trust
