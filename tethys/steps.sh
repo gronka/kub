@@ -34,5 +34,5 @@ https://kubernetes.github.io/ingress-nginx/deploy/#azure
 
 #####
 # Helm steps:
-# NEVERMIND too many undefined variables
+# NEVERMIND: lots of undefined variables - hits a timeout error
 https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli#create-an-ingress-controller

@@ -32,6 +32,8 @@ spec:
           valueFrom: 
             fieldRef:
               fieldPath: status.podIP
+        - name: ALLOWED_HOSTS
+          value: "\"[localhost, 127.0.0.1, 10.102.74.211]\""
         - name: CLIENT_MAX_BODY_SIZE
           value: 75M
         - name: NGINX_PORT
