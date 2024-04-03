@@ -1,3 +1,14 @@
 http://localhost:8001/api/v1/namespaces/default/services/SERVICE-NAME:PORT-NAME/proxy/ 
 
 http://localhost:8001/api/v1/namespaces/default/services/nginx:80/proxy/ 
+
+
+kubectl get pods
+kubectl get svc
+
+kubetctl describe pod {name}
+kubetctl describe [svc] {name}
+
+kubetctl logs {name}
+
+kubectl get events
