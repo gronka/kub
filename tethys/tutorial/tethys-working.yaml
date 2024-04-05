@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tethys-app
+  name: tethyscore
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tethys-app
+      app: tethyscore
   template:
     metadata:
       labels:
-        app: tethys-app
+        app: tethyscore
     spec:
       affinity:
         podAntiAffinity:
@@ -20,7 +20,7 @@ spec:
                   - key: "app"
                     operator: In
                     values:
-                    - tethys-app
+                    - tethyscore
               topologyKey: "kubernetes.io/hostname"
       containers:
       - name: tethyscore

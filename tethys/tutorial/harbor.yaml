@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tethys-app
+  name: tethyscore
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tethys-app
+      app: tethyscore
   template:
     metadata:
       labels:
-        app: tethys-app
+        app: tethyscore
     spec:
       affinity:
         podAntiAffinity:
@@ -20,11 +20,12 @@ spec:
                   - key: "app"
                     operator: In
                     values:
-                    - tethys-app
+                    - tethyscore
               topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: tethyscore
-        image: docker.io/gronka/tethyscore:latest
+      - name: tethys
+        #image: harbor.erdc.dren.mil/tethys/tethys:latest
+        image: harbor.erdc.dren.mil/tethys/tethys@sha256:b5b5eb52152c2ec6f9e02dc3512bbc77fdccd1b908a5dfefa1987d84e80e4c7f
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
