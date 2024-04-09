@@ -1,3 +1,3 @@
 #!/bin/bash
 
-kubectl exec --stdin --tty $1 -- /bin/bash
+kubectl exec -n tethys --stdin --tty $1 -- /bin/bash

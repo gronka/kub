@@ -1,16 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tethyscore
+  name: tethys-github
+  namespace: tethys
+  labels:
+    name: tethys-github
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tethyscore
+      app: tethys-github
   template:
     metadata:
       labels:
-        app: tethyscore
+        app: tethys-github
     spec:
       affinity:
         podAntiAffinity:
@@ -20,10 +23,10 @@ spec:
                   - key: "app"
                     operator: In
                     values:
-                    - tethyscore
+                    - tethys-github
               topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: tethyscore
+      - name: tethys-github
         image: docker.io/gronka/tethyscore:latest
         imagePullPolicy: Always
         ports:
