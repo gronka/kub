@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tethys-github
+  namespace: tethys
+  labels:
+    name: tethys-github
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tethys-github
+  template:
+    metadata:
+      labels:
+        app: tethys-github
+    spec:
+      # affinity:
+      #   podAntiAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       - labelSelector:
+      #           matchExpressions:
+      #             - key: "app"
+      #               operator: In
+      #               values:
+      #               - tethys-github
+      #         topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: tethys-github
+        image: docker.io/gronka/tethyscore:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          #- protocol: TCP
+          #  containerPort: 8000
+            #hostPort: 8000
+            #name: tethys-port
+        env : 
+        - name: K8S_HOST_IP
+          valueFrom: 
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: K8S_POD_IP
+          valueFrom: 
+            fieldRef:
+              fieldPath: status.podIP
+        - name: ALLOWED_HOSTS
+          value: "\"[localhost, 127.0.0.1, 62.10.57.242]\""
+        - name: CLIENT_MAX_BODY_SIZE
+          value: 75M
+        - name: NGINX_PORT
+          value: "80"
+        - name: TETHYS_DB_HOST
+          value: tethys-pg
+        - name: TETHYS_DB_NAME
+          value: tethys_platform
+        - name: TETHYS_DB_USERNAME
+          value: tethys_default
+        - name: TETHYS_DB_PASSWORD
+          value: pass
+        - name: TETHYS_DB_SUPERUSER
+          value: tethys_super
+        - name: TETHYS_DB_SUPERUSER_PASS
+          value: pass
+        - name: TETHYS_PORT
+          value: "8000"
+        # envFrom:
+        #   - configMapRef:
+        #       name: tethys-global-config-prod
+        # livenessProbe:
+        #   exec:
+        #     command:
+        #     - /bin/sh
+        #     - 
