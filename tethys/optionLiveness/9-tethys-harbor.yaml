@@ -1,33 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tethys-github
+  name: tethyscore
   namespace: tethys
   labels:
-    name: tethys-github
+    name: tethyscore
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tethys-github
+      app: tethyscore
   template:
     metadata:
       labels:
-        app: tethys-github
+        app: tethyscore
     spec:
-      # affinity:
-      #   podAntiAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       - labelSelector:
-      #           matchExpressions:
-      #             - key: "app"
-      #               operator: In
-      #               values:
-      #               - tethys-github
-      #         topologyKey: "kubernetes.io/hostname"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - tethyscore
+              topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: tethys-github
-        image: docker.io/gronka/tethyscore:latest
+      - name: tethys
+        image: harbor.erdc.dren.mil/tethys/tethys:latest
+        #image: harbor.erdc.dren.mil/tethys/tethys@sha256:b5b5eb52152c2ec6f9e02dc3512bbc77fdccd1b908a5dfefa1987d84e80e4c7f
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -67,8 +68,17 @@ spec:
         # envFrom:
         #   - configMapRef:
         #       name: tethys-global-config-prod
-        # livenessProbe:
-        #   exec:
-        #     command:
-        #     - /bin/sh
-        #     - 
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: tethys
+# spec:
+#   selector:
+#     app: tethys
+#   ports:
+#   - protocol: TCP
+#     port: 8000
+#     targetPort: 8000
+#     #name: tethys-port

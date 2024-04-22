@@ -1,0 +1,18 @@
+https://learn.microsoft.com/en-us/azure/aks/custom-certificate-authority
+
+1.
+az extension add --name aks-preview
+az extension update --name aks-preview
+
+2.
+az feature register --namespace "Microsoft.ContainerService" --name "CustomCATrustPreview"
+
+3. verify the previous command is registered:
+az feature show --namespace "Microsoft.ContainerService" --name "CustomCATrustPreview"
+
+4. refresh the resource provider:
+az provider register --namespace Microsoft.ContainerService
+
+5. Create the yaml file from this section:
+https://learn.microsoft.com/en-us/azure/aks/custom-certificate-authority#install-cas-after-node-pool-creation
+Install CAs after node pool creation
