@@ -1,37 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tethyscore
+  name: ers-ce
   namespace: tethys
   labels:
-    name: tethyscore
+    name: ers-ce
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: tethyscore
+      app: ers-ce
   template:
     metadata:
       labels:
-        app: tethyscore
+        app: ers-ce
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - tethyscore
-              topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: tethys
+      - name: ers-ce
         image: harbor.erdc.dren.mil/tethys/tethys:latest
-        #image: harbor.erdc.dren.mil/tethys/tethys@sha256:b5b5eb52152c2ec6f9e02dc3512bbc77fdccd1b908a5dfefa1987d84e80e4c7f
+        #image: harbor.erdc.dren.mil/rad/ers-ce:dev
         imagePullPolicy: Always
         ports:
-        - containerPort: 8000
+        - containerPort: 80
           #- protocol: TCP
           #  containerPort: 8000
             #hostPort: 8000
