@@ -1,18 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: tethys-github-lb
+  name: python-svc
   namespace: tethys
   annotations:
-    # service.beta.kubernetes.io/azure-load-balancer-ipv4: 10.208.1.101 # does not work in RDE
+    service.beta.kubernetes.io/azure-load-balancer-ipv4: 10.208.1.101
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-  labels:
-    name: tethys-github-lb
 spec:
   type: LoadBalancer
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 8000
   selector:
-    app: tethys-github
+    app: django-app

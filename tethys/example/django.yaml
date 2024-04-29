@@ -34,6 +34,8 @@ kind: Service
 metadata:
   name: python-svc
   namespace: tethys
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-ipv4: 10.208.1.101
 spec:
   type: LoadBalancer
   ports:

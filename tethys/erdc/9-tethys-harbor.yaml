@@ -1,0 +1,162 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ers-ce
+  namespace: tethys
+  labels:
+    name: ers-ce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ers-ce
+  template:
+    metadata:
+      labels:
+        app: ers-ce
+    spec:
+      containers:
+      - name: ers-ce
+        #image: harbor.erdc.dren.mil/tethys/tethys:latest
+        image: harbor.erdc.dren.mil/rad/ers-ce:dev
+        imagePullPolicy: Always
+        ports:
+          - name: http
+            containerPort: 80
+          - name: https
+            containerPort: 443
+          #- protocol: TCP
+            #hostPort: 8000
+        env : 
+        - name: K8S_HOST_IP
+          valueFrom: 
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: K8S_POD_IP
+          valueFrom: 
+            fieldRef:
+              fieldPath: status.podIP
+        - name: ALLOWED_HOSTS
+          value: "\"[localhost, 127.0.0.1, 10.208.1.40]\""
+        - name: CLIENT_MAX_BODY_SIZE
+          value: 75M
+        - name: NGINX_PORT
+          value: "80"
+        - name: TETHYS_DB_HOST
+          value: tethys-pg
+        - name: TETHYS_DB_NAME
+          value: tethys_platform
+        - name: TETHYS_DB_USERNAME
+          value: tethys_default
+        - name: TETHYS_DB_PASSWORD
+          value: pass
+        - name: TETHYS_DB_SUPERUSER
+          value: tethys_super
+        - name: TETHYS_DB_SUPERUSER_PASS
+          value: pass
+        - name: TETHYS_PORT
+          value: "8000"
+
+        # - name: USE_CI_CD
+        #   value: false
+        # - name: SSH_PRIVATE_KEY
+        #   value: ${SSH_PRIVATE_KEY-}
+        # - name: GROUP_DEPLOY_USER
+        #   value: deploy-user-here
+        # - name: GROUP_DEPLOY_TOKEN 
+        #   value: deploy-token-here
+        # - name: HELIOS_WORKFLOWS_BRANCH
+        #   value: ""
+        # - name: HPC_SCRIPTS_BRANCH
+        #   value: ""
+        # - name: HELIOS_TETHYSAPP_BRANCH
+        #   value: ""
+        # - name: KESTREL_TETHYSAPP_BRANCH
+        #   value: ""
+        # - name: GALAXY_SIM_BRANCH
+        #   value: ""
+        # - name: GALAXY_OIDC_BRANCH
+        #   value: ""
+        # - name: GALAXY_TETHYSAPP_BRANCH
+        #   value: ""
+        # - name: DJANGO_UIT_BRANCH
+        #   value: ${DJANGO_UIT_BRANCH-}
+        # - name: PYUIT_BRANCH
+        #   value: ${PYUIT_BRANCH-}
+        
+        - name: TERM
+          value: xterm
+        - name: APACHE_SSL_CERT_FILE
+          value: /var/lib/tethys_persist/keys/${APACHE_SSL_CERT_FILE-server.crt}
+        - name: APACHE_SSL_KEY_FILE
+          value: /var/lib/tethys_persist/keys/${APACHE_SSL_KEY_FILE-server.key}
+        - name: NUM_PROCESSES
+          value: ${NUM_PROCESSES-20}
+        - name: LOGIN_PAGE_TEMPLATE
+          value: /helios/login.html
+        - name: PROXY_SERVER_ADDITIONAL_DIRECTIVES
+          value: >
+            --additional-directive 'Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"'
+            --additional-directive "SSLProtocol -ALL +TLSv1.2"
+            --additional-directive 'SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384'
+            --additional-directive 'ProxyTimeout 300'
+            --additional-directive 'RewriteEngine on'
+            --additional-directive 'RewriteCond %{HTTP_HOST} ${ALLOWED_HOSTS_APACHE-!^(127\.0\.0\.1|localhost)$} [NC]'
+            --additional-directive 'RewriteRule ^(.*)$ - [L,R=400]'
+        # - name: ALLOWED_HOSTS
+        #   value: ${ALLOWED_HOSTS_DJANGO-"[127.0.0.1, localhost]"}
+        - name: BYPASS_TETHYS_HOME_PAGE
+          value: "true"
+        - name: DJANGO_ALLOW_ASYNC_UNSAFE
+          value: "true"
+        # - name: TETHYS_DB_HOST
+        #   value: "db"
+        # - name: TETHYS_DB_USERNAME
+        #   value: "tethys_default"
+        # - name: TETHYS_DB_PASSWORD
+        #   value: ${TETHYS_DB_PASSWORD-pass}
+        # - name: TETHYS_DB_SUPERUSER
+        #   value: "tethys_super"
+
+        # - name: TETHYS_DB_SUPERUSER_PASS
+        #   value: ${TETHYS_DB_SUPERUSER_PASS-pass}
+        # - name: POSTGRES_PASSWORD
+        #   value: ${POSTGRES_PASSWORD-pass}
+        - name: TETHYS_DB_PORT
+          value: "5432"
+        - name: USE_SSL
+          value: "true"
+        - name: STATICFILES_USE_NPM
+          value: "true"
+        - name: OTHER_SETTINGS
+          value: >
+            -s INSTALLED_APPS "['uit_plus_job', 'oidc_auth']"
+            -s AUTHENTICATION_BACKENDS "['uit_plus_job.oauth2.UitPlusOAuth2', 'oidc_auth.oidc_auth.OIDCConnectAuth']"
+            -s OAUTH_CONFIG.SOCIAL_AUTH_UITPLUS_KEY ${UITPLUS_KEY}
+            -s OAUTH_CONFIG.SOCIAL_AUTH_UITPLUS_SECRET ${UITPLUS_SECRET}
+            -s OAUTH_CONFIG.SOCIAL_AUTH_OIDC_KEY ${OIDC_KEY}
+            -s OAUTH_CONFIG.SOCIAL_AUTH_OIDC_SECRET ${OIDC_SECRET}
+            -s SOCIAL_AUTH_PIPELINE "['social_core.pipeline.social_auth.social_details', 'social_core.pipeline.social_auth.social_uid', 'social_core.pipeline.social_auth.auth_allowed', 'social_core.pipeline.social_auth.social_user', 'social_core.pipeline.user.get_username', 'social_core.pipeline.social_auth.associate_by_email', 'social_core.pipeline.user.create_user', 'social_core.pipeline.social_auth.associate_user', 'social_core.pipeline.social_auth.load_extra_data', 'social_core.pipeline.user.user_details']"
+            -s BOKEH_RESOURCES inline
+            -s CSRF_COOKIE_HTTPONLY "false"
+            -s SESSION_CONFIG.SESSION_SECURITY_EXPIRE_AFTER 900
+            -s SESSION_CONFIG.SESSION_SECURITY_WARN_AFTER 600
+            -s SOCIAL_AUTH_REDIRECT_IS_HTTPS "true"
+            -s LOGGING.loggers.uit.level "${UIT_LOGGING_LEVEL-DEBUG}"
+        # envFrom:
+        #   - configMapRef:
+        #       name: tethys-global-config-prod
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: tethys
+# spec:
+#   selector:
+#     app: tethys
+#   ports:
+#   - protocol: TCP
+#     port: 8000
+#     targetPort: 8000
+#     #name: tethys-port
